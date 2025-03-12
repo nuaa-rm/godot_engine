@@ -28,7 +28,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#pragma once
+#ifndef VEHICLE_BODY_3D_H
+#define VEHICLE_BODY_3D_H
 
 #include "scene/3d/physics/physics_body_3d.h"
 #include "scene/3d/physics/rigid_body_3d.h"
@@ -151,6 +152,21 @@ public:
 	void set_steering(real_t p_steering);
 	real_t get_steering() const;
 
+	/**/
+	enum Tyre_type{
+		TYPE_RUDDER,   // 舵轮
+		TYPE_MECANUM,    // 麦轮
+		TYPE_OMNI        // 全向轮
+	};
+	Tyre_type tyre_type = TYPE_RUDDER;
+	void set_tyre_type(Tyre_type input);
+	Tyre_type get_tyre_type();
+
+	bool mecanum_left_oblique = false;
+	void set_mecanum_left_oblique(bool input);
+	bool get_mecanum_left_oblique();
+	/**/
+
 	PackedStringArray get_configuration_warnings() const override;
 
 	VehicleWheel3D();
@@ -213,3 +229,7 @@ public:
 
 	VehicleBody3D();
 };
+
+VARIANT_ENUM_CAST(VehicleWheel3D::Tyre_type);
+
+#endif // VEHICLE_BODY_3D_H
