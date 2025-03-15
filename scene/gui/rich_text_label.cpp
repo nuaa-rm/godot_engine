@@ -2189,7 +2189,7 @@ void RichTextLabel::gui_input(const Ref<InputEvent> &p_event) {
 
 		if (b->get_button_index() == MouseButton::RIGHT && context_menu_enabled) {
 			_update_context_menu();
-			menu->set_position(get_screen_position() + b->get_position());
+			menu->set_position(get_screen_transform().xform(b->get_position()));
 			menu->reset_size();
 			menu->popup();
 			grab_focus();
@@ -6356,9 +6356,7 @@ float RichTextLabel::get_visible_ratio() const {
 
 void RichTextLabel::set_effects(Array p_effects) {
 	custom_effects = p_effects;
-	if (!stack_externally_modified && use_bbcode) {
-		parse_bbcode(atr(text));
-	}
+	reload_effects();
 }
 
 Array RichTextLabel::get_effects() {
@@ -6371,8 +6369,14 @@ void RichTextLabel::install_effect(const Variant effect) {
 
 	ERR_FAIL_COND_MSG(rteffect.is_null(), "Invalid RichTextEffect resource.");
 	custom_effects.push_back(effect);
+	reload_effects();
+}
+
+void RichTextLabel::reload_effects() {
 	if (!stack_externally_modified && use_bbcode) {
+		internal_stack_editing = true;
 		parse_bbcode(atr(text));
+		internal_stack_editing = false;
 	}
 }
 
@@ -6580,6 +6584,7 @@ void RichTextLabel::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_effects", "effects"), &RichTextLabel::set_effects);
 	ClassDB::bind_method(D_METHOD("get_effects"), &RichTextLabel::get_effects);
 	ClassDB::bind_method(D_METHOD("install_effect", "effect"), &RichTextLabel::install_effect);
+	ClassDB::bind_method(D_METHOD("reload_effects"), &RichTextLabel::reload_effects);
 
 	ClassDB::bind_method(D_METHOD("get_menu"), &RichTextLabel::get_menu);
 	ClassDB::bind_method(D_METHOD("is_menu_visible"), &RichTextLabel::is_menu_visible);

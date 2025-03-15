@@ -77,7 +77,7 @@ String ProjectSettings::get_imported_files_path() const {
 // This is used by the project manager to provide the initial_settings for config/features.
 const PackedStringArray ProjectSettings::get_required_features() {
 	PackedStringArray features;
-	features.append(VERSION_BRANCH);
+	features.append(GODOT_VERSION_BRANCH);
 #ifdef REAL_T_IS_DOUBLE
 	features.append("Double Precision");
 #endif
@@ -92,9 +92,9 @@ const PackedStringArray ProjectSettings::_get_supported_features() {
 #endif
 	// Allow pinning to a specific patch number or build type by marking
 	// them as supported. They're only used if the user adds them manually.
-	features.append(VERSION_BRANCH "." _MKSTR(VERSION_PATCH));
-	features.append(VERSION_FULL_CONFIG);
-	features.append(VERSION_FULL_BUILD);
+	features.append(GODOT_VERSION_BRANCH "." _MKSTR(GODOT_VERSION_PATCH));
+	features.append(GODOT_VERSION_FULL_CONFIG);
+	features.append(GODOT_VERSION_FULL_BUILD);
 
 #ifdef RD_ENABLED
 	features.append("Forward Plus");
@@ -1612,6 +1612,7 @@ ProjectSettings::ProjectSettings() {
 	GLOBAL_DEF_BASIC("input_devices/pointing/android/enable_long_press_as_right_click", false);
 	GLOBAL_DEF_BASIC("input_devices/pointing/android/enable_pan_and_scale_gestures", false);
 	GLOBAL_DEF_BASIC(PropertyInfo(Variant::INT, "input_devices/pointing/android/rotary_input_scroll_axis", PROPERTY_HINT_ENUM, "Horizontal,Vertical"), 1);
+	GLOBAL_DEF("input_devices/pointing/android/override_volume_buttons", false);
 
 	// These properties will not show up in the dialog. If you want to exclude whole groups, use add_hidden_prefix().
 	GLOBAL_DEF_INTERNAL("application/config/features", PackedStringArray());
