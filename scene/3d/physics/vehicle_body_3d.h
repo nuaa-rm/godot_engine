@@ -28,7 +28,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#pragma once
+#ifndef VEHICLE_BODY_3D_H
+#define VEHICLE_BODY_3D_H
 
 #include "scene/3d/physics/physics_body_3d.h"
 #include "scene/3d/physics/rigid_body_3d.h"
@@ -151,6 +152,13 @@ public:
 	void set_steering(real_t p_steering);
 	real_t get_steering() const;
 
+	/**/
+
+	bool mecanum_left_oblique = false;
+	void set_mecanum_left_oblique(bool input);
+	bool get_mecanum_left_oblique();
+	/**/
+
 	PackedStringArray get_configuration_warnings() const override;
 
 	VehicleWheel3D();
@@ -213,3 +221,6 @@ public:
 
 	VehicleBody3D();
 };
+
+
+#endif // VEHICLE_BODY_3D_H
