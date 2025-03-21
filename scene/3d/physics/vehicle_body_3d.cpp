@@ -863,7 +863,6 @@ void VehicleBody3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
 		Vector3 relpos = wheel.m_raycastInfo.m_hardPointWS - p_state->get_transform().origin;
 		Vector3 vel = p_state->get_linear_velocity() + (p_state->get_angular_velocity()).cross(relpos); // * mPos);
 
-		real_t rpm_sig = 1;
 		real_t proj_angle = 0;
 
 		if (wheel.m_raycastInfo.m_isInContact) {
@@ -895,14 +894,9 @@ void VehicleBody3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
 		}
 
 		float ste_sig = 1;
-		//		if(Math::cos(wheel.get_steering()) < 0){
-		//			ste_sig = -1;
-		//		}
-		//		print_line(proj_angle, Math::rad_to_deg(wheel.get_steering()));
 		if (Math::cos(proj_angle - (Math::rad_to_deg(wheel.get_steering()) + 90)) < 0) {
 			ste_sig = -1;
 		}
-		//		print_line(ste_sig," ",rpm_sig);
 		wheel.m_rotation += wheel.m_deltaRotation * ste_sig;
 		wheel.m_rpm = ((wheel.m_deltaRotation / step) * 60) / Math_TAU;
 
