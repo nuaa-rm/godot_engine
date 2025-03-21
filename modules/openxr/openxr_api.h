@@ -31,7 +31,6 @@
 #pragma once
 
 #include "action_map/openxr_action.h"
-#include "extensions/openxr_composition_layer_provider.h"
 #include "extensions/openxr_extension_wrapper.h"
 #include "util.h"
 
@@ -94,7 +93,7 @@ private:
 	Vector<CharString> enabled_extensions;
 
 	// composition layer providers
-	Vector<OpenXRCompositionLayerProvider *> composition_layer_providers;
+	Vector<OpenXRExtensionWrapper *> composition_layer_providers;
 
 	// projection views extensions
 	Vector<OpenXRExtensionWrapper *> projection_views_extensions;
@@ -419,6 +418,8 @@ public:
 	OpenXRGraphicsExtensionWrapper *get_graphics_extension() const { return graphics_extension; }
 	String get_runtime_name() const { return runtime_name; }
 	String get_runtime_version() const { return runtime_version; }
+	String get_system_name() const { return system_name; }
+	uint32_t get_vendor_id() const { return vendor_id; }
 
 	// helper method to convert an XrPosef to a Transform3D
 	Transform3D transform_from_pose(const XrPosef &p_pose);
@@ -575,8 +576,8 @@ public:
 	XRPose::TrackingConfidence get_action_pose(RID p_action, RID p_tracker, Transform3D &r_transform, Vector3 &r_linear_velocity, Vector3 &r_angular_velocity);
 	bool trigger_haptic_pulse(RID p_action, RID p_tracker, float p_frequency, float p_amplitude, XrDuration p_duration_ns);
 
-	void register_composition_layer_provider(OpenXRCompositionLayerProvider *provider);
-	void unregister_composition_layer_provider(OpenXRCompositionLayerProvider *provider);
+	void register_composition_layer_provider(OpenXRExtensionWrapper *p_extension);
+	void unregister_composition_layer_provider(OpenXRExtensionWrapper *p_extension);
 
 	void register_projection_views_extension(OpenXRExtensionWrapper *p_extension);
 	void unregister_projection_views_extension(OpenXRExtensionWrapper *p_extension);

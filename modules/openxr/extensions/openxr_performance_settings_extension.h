@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  nav_link.h                                                            */
+/*  openxr_performance_settings_extension.h                               */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -30,71 +30,35 @@
 
 #pragma once
 
-#include "3d/nav_base_iteration_3d.h"
-#include "nav_base.h"
-#include "nav_utils.h"
+#include "../openxr_interface.h"
+#include "../util.h"
+#include "openxr_extension_wrapper.h"
 
-struct NavLinkIteration : NavBaseIteration {
-	bool bidirectional = true;
-	Vector3 start_position;
-	Vector3 end_position;
-	LocalVector<gd::Polygon> navmesh_polygons;
-
-	Vector3 get_start_position() const { return start_position; }
-	Vector3 get_end_position() const { return end_position; }
-	bool is_bidirectional() const { return bidirectional; }
-};
-
-#include "core/templates/self_list.h"
-
-class NavLink : public NavBase {
-	NavMap *map = nullptr;
-	bool bidirectional = true;
-	Vector3 start_position;
-	Vector3 end_position;
-	bool enabled = true;
-
-	bool link_dirty = true;
-
-	SelfList<NavLink> sync_dirty_request_list_element;
-
+class OpenXRPerformanceSettingsExtension : public OpenXRExtensionWrapper {
 public:
-	NavLink();
-	~NavLink();
+	static OpenXRPerformanceSettingsExtension *get_singleton();
 
-	void set_map(NavMap *p_map);
-	NavMap *get_map() const {
-		return map;
-	}
+	OpenXRPerformanceSettingsExtension();
+	virtual ~OpenXRPerformanceSettingsExtension() override;
 
-	void set_enabled(bool p_enabled);
-	bool get_enabled() const { return enabled; }
+	virtual HashMap<String, bool *> get_requested_extensions() override;
 
-	void set_bidirectional(bool p_bidirectional);
-	bool is_bidirectional() const {
-		return bidirectional;
-	}
+	virtual void on_instance_created(const XrInstance p_instance) override;
+	virtual bool on_event_polled(const XrEventDataBuffer &event) override;
 
-	void set_start_position(Vector3 p_position);
-	Vector3 get_start_position() const {
-		return start_position;
-	}
+	bool is_available();
 
-	void set_end_position(Vector3 p_position);
-	Vector3 get_end_position() const {
-		return end_position;
-	}
+	void set_cpu_level(OpenXRInterface::PerfSettingsLevel p_level);
+	void set_gpu_level(OpenXRInterface::PerfSettingsLevel p_level);
 
-	// NavBase properties.
-	virtual void set_navigation_layers(uint32_t p_navigation_layers) override;
-	virtual void set_enter_cost(real_t p_enter_cost) override;
-	virtual void set_travel_cost(real_t p_travel_cost) override;
-	virtual void set_owner_id(ObjectID p_owner_id) override;
+private:
+	static OpenXRPerformanceSettingsExtension *singleton;
 
-	bool is_dirty() const;
-	void sync();
-	void request_sync();
-	void cancel_sync_request();
+	bool available = false;
 
-	void get_iteration_update(NavLinkIteration &r_iteration);
+	XrPerfSettingsLevelEXT level_to_openxr(OpenXRInterface::PerfSettingsLevel p_level);
+	OpenXRInterface::PerfSettingsSubDomain openxr_to_sub_domain(XrPerfSettingsSubDomainEXT p_sub_domain);
+	OpenXRInterface::PerfSettingsNotificationLevel openxr_to_notification_level(XrPerfSettingsNotificationLevelEXT p_notification_level);
+
+	EXT_PROTO_XRRESULT_FUNC3(xrPerfSettingsSetPerformanceLevelEXT, (XrSession), session, (XrPerfSettingsDomainEXT), domain, (XrPerfSettingsLevelEXT), level)
 };

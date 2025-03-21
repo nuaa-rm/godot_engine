@@ -160,9 +160,7 @@ public:
 				CRASH_COND_MSG(!data, "Out of memory");
 			}
 			if constexpr (!std::is_trivially_constructible_v<T> && !force_trivial) {
-				for (U i = count; i < p_size; i++) {
-					memnew_placement(&data[i], T);
-				}
+				memnew_arr_placement(data + count, p_size - count);
 			}
 			count = p_size;
 		}
@@ -253,13 +251,14 @@ public:
 		}
 	}
 
-	int64_t find(const T &p_val, U p_from = 0) const {
-		for (U i = p_from; i < count; i++) {
-			if (data[i] == p_val) {
-				return int64_t(i);
-			}
+	int64_t find(const T &p_val, int64_t p_from = 0) const {
+		if (p_from < 0) {
+			p_from = size() + p_from;
 		}
-		return -1;
+		if (p_from < 0 || p_from >= size()) {
+			return -1;
+		}
+		return span().find(p_val, p_from);
 	}
 
 	bool has(const T &p_val) const {
@@ -382,3 +381,7 @@ public:
 
 template <typename T, typename U = uint32_t, bool force_trivial = false>
 using TightLocalVector = LocalVector<T, U, force_trivial, true>;
+
+// Zero-constructing LocalVector initializes count, capacity and data to 0 and thus empty.
+template <typename T, typename U, bool force_trivial, bool tight>
+struct is_zero_constructible<LocalVector<T, U, force_trivial, tight>> : std::true_type {};

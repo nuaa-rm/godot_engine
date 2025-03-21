@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  nav_base.h                                                            */
+/*  openxr_api_extension.compat.inc                                       */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,40 +28,31 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#pragma once
+#ifndef DISABLE_DEPRECATED
 
-#include "nav_rid.h"
-#include "nav_utils.h"
+#include "extensions/openxr_extension_wrapper_extension.h"
 
-#include "servers/navigation/navigation_utilities.h"
+void OpenXRAPIExtension::_register_composition_layer_provider_bind_compat_104087(OpenXRExtensionWrapperExtension *p_extension) {
+	register_composition_layer_provider(p_extension);
+}
 
-class NavMap;
+void OpenXRAPIExtension::_unregister_composition_layer_provider_bind_compat_104087(OpenXRExtensionWrapperExtension *p_extension) {
+	unregister_composition_layer_provider(p_extension);
+}
 
-class NavBase : public NavRid {
-protected:
-	uint32_t navigation_layers = 1;
-	real_t enter_cost = 0.0;
-	real_t travel_cost = 1.0;
-	ObjectID owner_id;
-	NavigationUtilities::PathSegmentType type;
+void OpenXRAPIExtension::_register_projection_views_extension_bind_compat_104087(OpenXRExtensionWrapperExtension *p_extension) {
+	register_projection_views_extension(p_extension);
+}
 
-public:
-	NavigationUtilities::PathSegmentType get_type() const { return type; }
+void OpenXRAPIExtension::_unregister_projection_views_extension_bind_compat_104087(OpenXRExtensionWrapperExtension *p_extension) {
+	unregister_projection_views_extension(p_extension);
+}
 
-	virtual void set_use_edge_connections(bool p_enabled) {}
-	virtual bool get_use_edge_connections() const { return false; }
+void OpenXRAPIExtension::_bind_compatibility_methods() {
+	ClassDB::bind_compatibility_method(D_METHOD("register_composition_layer_provider", "extension"), &OpenXRAPIExtension::_register_composition_layer_provider_bind_compat_104087);
+	ClassDB::bind_compatibility_method(D_METHOD("unregister_composition_layer_provider", "extension"), &OpenXRAPIExtension::_unregister_composition_layer_provider_bind_compat_104087);
+	ClassDB::bind_compatibility_method(D_METHOD("register_projection_views_extension", "extension"), &OpenXRAPIExtension::_register_projection_views_extension_bind_compat_104087);
+	ClassDB::bind_compatibility_method(D_METHOD("unregister_projection_views_extension", "extension"), &OpenXRAPIExtension::_unregister_projection_views_extension_bind_compat_104087);
+}
 
-	virtual void set_navigation_layers(uint32_t p_navigation_layers) {}
-	uint32_t get_navigation_layers() const { return navigation_layers; }
-
-	virtual void set_enter_cost(real_t p_enter_cost) {}
-	real_t get_enter_cost() const { return enter_cost; }
-
-	virtual void set_travel_cost(real_t p_travel_cost) {}
-	real_t get_travel_cost() const { return travel_cost; }
-
-	virtual void set_owner_id(ObjectID p_owner_id) {}
-	ObjectID get_owner_id() const { return owner_id; }
-
-	virtual ~NavBase() {}
-};
+#endif // DISABLE_DEPRECATED

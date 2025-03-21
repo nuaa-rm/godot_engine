@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  nav_region.h                                                          */
+/*  camera_2d_editor_plugin.h                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -30,86 +30,51 @@
 
 #pragma once
 
-#include "nav_base.h"
-#include "nav_utils.h"
+#include "editor/plugins/editor_plugin.h"
 
-#include "core/os/rw_lock.h"
-#include "scene/resources/navigation_mesh.h"
+class Camera2D;
+class Label;
+class MenuButton;
 
-struct NavRegionIteration;
+class Camera2DEditor : public Control {
+	GDCLASS(Camera2DEditor, Control);
 
-class NavRegion : public NavBase {
-	RWLock region_rwlock;
+	enum Menu {
+		MENU_SNAP_LIMITS_TO_VIEWPORT,
+	};
 
-	NavMap *map = nullptr;
-	Transform3D transform;
-	bool enabled = true;
+	Camera2D *selected_camera = nullptr;
 
-	bool use_edge_connections = true;
+	friend class Camera2DEditorPlugin;
+	MenuButton *options = nullptr;
 
-	bool region_dirty = true;
-	bool polygons_dirty = true;
+	void _menu_option(int p_option);
+	void _snap_limits_to_viewport();
+	void _undo_snap_limits_to_viewport(const Rect2 &p_prev_rect);
 
-	LocalVector<gd::Polygon> navmesh_polygons;
-
-	real_t surface_area = 0.0;
-	AABB bounds;
-
-	RWLock navmesh_rwlock;
-	Vector<Vector3> pending_navmesh_vertices;
-	Vector<Vector<int>> pending_navmesh_polygons;
-
-	SelfList<NavRegion> sync_dirty_request_list_element;
+protected:
+	static void _bind_methods();
+	void _notification(int p_what);
 
 public:
-	NavRegion();
-	~NavRegion();
+	void edit(Camera2D *p_camera);
+	Camera2DEditor();
+};
 
-	void scratch_polygons() {
-		polygons_dirty = true;
-	}
+class Camera2DEditorPlugin : public EditorPlugin {
+	GDCLASS(Camera2DEditorPlugin, EditorPlugin);
 
-	void set_enabled(bool p_enabled);
-	bool get_enabled() const { return enabled; }
+	Camera2DEditor *camera_2d_editor = nullptr;
 
-	void set_map(NavMap *p_map);
-	NavMap *get_map() const {
-		return map;
-	}
+	Label *approach_to_move_rect = nullptr;
 
-	virtual void set_use_edge_connections(bool p_enabled) override;
-	virtual bool get_use_edge_connections() const override { return use_edge_connections; }
+	void _editor_theme_changed();
+	void _update_approach_text_visibility();
 
-	void set_transform(Transform3D transform);
-	const Transform3D &get_transform() const {
-		return transform;
-	}
+public:
+	virtual void edit(Object *p_object) override;
+	virtual bool handles(Object *p_object) const override;
+	virtual void make_visible(bool p_visible) override;
 
-	void set_navigation_mesh(Ref<NavigationMesh> p_navigation_mesh);
-
-	LocalVector<gd::Polygon> const &get_polygons() const {
-		return navmesh_polygons;
-	}
-
-	Vector3 get_closest_point_to_segment(const Vector3 &p_from, const Vector3 &p_to, bool p_use_collision) const;
-	gd::ClosestPointQueryResult get_closest_point_info(const Vector3 &p_point) const;
-	Vector3 get_random_point(uint32_t p_navigation_layers, bool p_uniformly) const;
-
-	real_t get_surface_area() const { return surface_area; }
-	AABB get_bounds() const { return bounds; }
-
-	// NavBase properties.
-	virtual void set_navigation_layers(uint32_t p_navigation_layers) override;
-	virtual void set_enter_cost(real_t p_enter_cost) override;
-	virtual void set_travel_cost(real_t p_travel_cost) override;
-	virtual void set_owner_id(ObjectID p_owner_id) override;
-
-	bool sync();
-	void request_sync();
-	void cancel_sync_request();
-
-	void get_iteration_update(NavRegionIteration &r_iteration);
-
-private:
-	void update_polygons();
+	Camera2DEditorPlugin();
 };
