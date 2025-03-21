@@ -222,5 +222,4 @@ public:
 	VehicleBody3D();
 };
 
-
 #endif // VEHICLE_BODY_3D_H

@@ -231,17 +231,14 @@ Node3D *VehicleWheel3D::get_contact_body() const {
 	return m_raycastInfo.m_groundObject;
 }
 
-
-
-void VehicleWheel3D::set_mecanum_left_oblique(bool input){
+void VehicleWheel3D::set_mecanum_left_oblique(bool input) {
 	mecanum_left_oblique = input;
 	set_steering(m_steering);
 }
 
-bool VehicleWheel3D::get_mecanum_left_oblique(){
+bool VehicleWheel3D::get_mecanum_left_oblique() {
 	return mecanum_left_oblique;
 }
-
 
 void VehicleWheel3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_radius", "length"), &VehicleWheel3D::set_radius);
@@ -295,11 +292,10 @@ void VehicleWheel3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_steering", "steering"), &VehicleWheel3D::set_steering);
 	ClassDB::bind_method(D_METHOD("get_steering"), &VehicleWheel3D::get_steering);
 
-
 	ClassDB::bind_method(D_METHOD("set_mecanum_left_oblique", "mecanum_left_oblique"), &VehicleWheel3D::set_mecanum_left_oblique);
 	ClassDB::bind_method(D_METHOD("get_mecanum_left_oblique"), &VehicleWheel3D::get_mecanum_left_oblique);
 
-	ADD_GROUP("Tyre_set","");
+	ADD_GROUP("Tyre_set", "");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "left_oblique"), "set_mecanum_left_oblique", "get_mecanum_left_oblique");
 	ADD_GROUP("Per-Wheel Motion", "");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "engine_force", PROPERTY_HINT_RANGE, U"-1024,1024,0.01,or_less,or_greater,suffix:kg\u22C5m/s\u00B2 (N)"), "set_engine_force", "get_engine_force");
@@ -882,39 +878,33 @@ void VehicleBody3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
 
 			real_t proj2 = fwd.dot(vel);
 
-
 			Vector3 hor(
 					chassisWorldTransform.basis[0][Vector3::AXIS_X],
 					chassisWorldTransform.basis[1][Vector3::AXIS_X],
 					chassisWorldTransform.basis[2][Vector3::AXIS_X]);
 			real_t proj_x = hor.dot(wheel.m_raycastInfo.m_contactNormalWS);
 			hor -= wheel.m_raycastInfo.m_contactNormalWS * proj_x;
-			real_t  proj2_x = hor.dot(vel);
+			real_t proj2_x = hor.dot(vel);
 
-			proj_angle = Math::rad_to_deg(Math::atan2(proj2,-proj_x));
+			proj_angle = Math::rad_to_deg(Math::atan2(proj2, -proj_x));
 
-			real_t new_proj2 = sqrt(pow(proj2,2)+pow(proj2_x,2));
+			real_t new_proj2 = sqrt(pow(proj2, 2) + pow(proj2_x, 2));
 
 			wheel.m_deltaRotation = (new_proj2 * step) / (wheel.m_wheelRadius);
 			//			wheel.m_deltaRotation = (proj2 * step) / (wheel.m_wheelRadius);
-
 		}
-
-
 
 		float ste_sig = 1;
 		//		if(Math::cos(wheel.get_steering()) < 0){
 		//			ste_sig = -1;
 		//		}
 		//		print_line(proj_angle, Math::rad_to_deg(wheel.get_steering()));
-		if(Math::cos(proj_angle - (Math::rad_to_deg(wheel.get_steering()) + 90)) < 0){
+		if (Math::cos(proj_angle - (Math::rad_to_deg(wheel.get_steering()) + 90)) < 0) {
 			ste_sig = -1;
 		}
 		//		print_line(ste_sig," ",rpm_sig);
 		wheel.m_rotation += wheel.m_deltaRotation * ste_sig;
 		wheel.m_rpm = ((wheel.m_deltaRotation / step) * 60) / Math_TAU;
-
-
 
 		wheel.m_deltaRotation *= real_t(0.99); //damping of rotation when not in contact
 	}
