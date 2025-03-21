@@ -220,5 +220,3 @@ public:
 
 	VehicleBody3D();
 };
-
-
