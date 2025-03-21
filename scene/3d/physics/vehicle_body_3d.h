@@ -153,14 +153,6 @@ public:
 	real_t get_steering() const;
 
 	/**/
-	enum Tyre_type{
-		TYPE_RUDDER,   // 舵轮
-		TYPE_MECANUM,    // 麦轮
-		TYPE_OMNI        // 全向轮
-	};
-	Tyre_type tyre_type = TYPE_RUDDER;
-	void set_tyre_type(Tyre_type input);
-	Tyre_type get_tyre_type();
 
 	bool mecanum_left_oblique = false;
 	void set_mecanum_left_oblique(bool input);
@@ -230,6 +222,5 @@ public:
 	VehicleBody3D();
 };
 
-VARIANT_ENUM_CAST(VehicleWheel3D::Tyre_type);
 
 #endif // VEHICLE_BODY_3D_H
